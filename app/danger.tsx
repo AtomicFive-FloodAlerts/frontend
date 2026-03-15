@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,14 @@ import {
   SafeAreaView,
   RefreshControl,
   Alert as RNAlert,
-} from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import alertService, { FloodReport, Alert } from './services/alertService';
-import notificationService from './services/notificationService';
+} from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import alertService, { FloodReport, Alert } from "./services/alertService";
+import notificationService from "./services/notificationService";
 
 const MOCK_USER_ID = 1;
 const MOCK_USER_LATITUDE = 40.7128;
-const MOCK_USER_LONGITUDE = -74.0060;
+const MOCK_USER_LONGITUDE = -74.006;
 
 export default function DangerScreen() {
   const [activeFloods, setActiveFloods] = useState<FloodReport[]>([]);
@@ -28,9 +28,9 @@ export default function DangerScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [reportData, setReportData] = useState({
-    description: '',
-    waterLevel: '50',
-    areaName: '',
+    description: "",
+    waterLevel: "50",
+    areaName: "",
   });
 
   const loadData = useCallback(async () => {
@@ -43,7 +43,7 @@ export default function DangerScreen() {
       setActiveFloods(floods);
       setAlerts(userAlerts);
     } catch (error) {
-      console.error('Error loading danger data:', error);
+      console.error("Error loading danger data:", error);
     } finally {
       setLoading(false);
     }
@@ -58,12 +58,16 @@ export default function DangerScreen() {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [loadData])
+    }, [loadData]),
   );
 
   const handleSubmitReport = async () => {
-    if (!reportData.description || !reportData.areaName || !reportData.waterLevel) {
-      RNAlert.alert('Validation Error', 'Please fill all fields');
+    if (
+      !reportData.description ||
+      !reportData.areaName ||
+      !reportData.waterLevel
+    ) {
+      RNAlert.alert("Validation Error", "Please fill all fields");
       return;
     }
 
@@ -74,26 +78,34 @@ export default function DangerScreen() {
       MOCK_USER_LONGITUDE,
       reportData.description,
       waterLevel,
-      reportData.areaName
+      reportData.areaName,
     );
 
     if (success) {
       setReportModalVisible(false);
-      setReportData({ description: '', waterLevel: '50', areaName: '' });
-      RNAlert.alert('Success', 'Flood report submitted and alerts sent to nearby users!');
+      setReportData({ description: "", waterLevel: "50", areaName: "" });
+      RNAlert.alert(
+        "Success",
+        "Flood report submitted and alerts sent to nearby users!",
+      );
       await loadData();
     } else {
-      RNAlert.alert('Error', 'Failed to submit flood report');
+      RNAlert.alert("Error", "Failed to submit flood report");
     }
   };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case 'LOW': return '🟡';
-      case 'MODERATE': return '🟠';
-      case 'HIGH': return '🔴';
-      case 'CRITICAL': return '🚨';
-      default: return '⚠️';
+      case "LOW":
+        return "🟡";
+      case "MODERATE":
+        return "🟠";
+      case "HIGH":
+        return "🔴";
+      case "CRITICAL":
+        return "🚨";
+      default:
+        return "⚠️";
     }
   };
 
@@ -108,8 +120,8 @@ export default function DangerScreen() {
     );
   }
 
-  const criticalFloods = activeFloods.filter(f => f.severity === 'CRITICAL');
-  const userAlerts = alerts.filter(a => a.status === 'UNREAD');
+  const criticalFloods = activeFloods.filter((f) => f.severity === "CRITICAL");
+  const userAlerts = alerts.filter((a) => a.status === "UNREAD");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,7 +130,7 @@ export default function DangerScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={['#FF6B6B']}
+            colors={["#FF6B6B"]}
           />
         }
       >
@@ -146,18 +158,31 @@ export default function DangerScreen() {
 
         {userAlerts.length > 0 && (
           <View style={styles.alertsSection}>
-            <Text style={styles.sectionTitle}>🔔 Your Active Alerts ({userAlerts.length})</Text>
+            <Text style={styles.sectionTitle}>
+              🔔 Your Active Alerts ({userAlerts.length})
+            </Text>
             <FlatList
               data={userAlerts.slice(0, 3)}
-              keyExtractor={item => item.id.toString()}
+              keyExtractor={(item) => item.id.toString()}
               scrollEnabled={false}
               renderItem={({ item }) => (
-                <View style={[styles.alertSummary, { borderLeftColor: notificationService.getSeverityColor(item.floodSeverity) }]}>
+                <View
+                  style={[
+                    styles.alertSummary,
+                    {
+                      borderLeftColor: notificationService.getSeverityColor(
+                        item.floodSeverity,
+                      ),
+                    },
+                  ]}
+                >
                   <Text style={styles.alertSummaryTitle}>
                     {getSeverityIcon(item.floodSeverity)} {item.floodSeverity}
                   </Text>
                   <Text style={styles.alertSummaryArea}>{item.areaName}</Text>
-                  <Text style={styles.alertSummaryDistance}>{item.distanceKm.toFixed(1)} km away</Text>
+                  <Text style={styles.alertSummaryDistance}>
+                    {item.distanceKm.toFixed(1)} km away
+                  </Text>
                 </View>
               )}
             />
@@ -165,8 +190,10 @@ export default function DangerScreen() {
         )}
 
         <View style={styles.floodsSection}>
-          <Text style={styles.sectionTitle}>📍 Flood Reports ({activeFloods.length})</Text>
-          
+          <Text style={styles.sectionTitle}>
+            📍 Flood Reports ({activeFloods.length})
+          </Text>
+
           {activeFloods.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyIcon}>✓</Text>
@@ -176,10 +203,19 @@ export default function DangerScreen() {
           ) : (
             <FlatList
               data={activeFloods}
-              keyExtractor={item => item.id.toString()}
+              keyExtractor={(item) => item.id.toString()}
               scrollEnabled={false}
               renderItem={({ item }) => (
-                <View style={[styles.floodCard, { borderLeftColor: notificationService.getSeverityColor(item.severity) }]}>
+                <View
+                  style={[
+                    styles.floodCard,
+                    {
+                      borderLeftColor: notificationService.getSeverityColor(
+                        item.severity,
+                      ),
+                    },
+                  ]}
+                >
                   <View style={styles.floodHeader}>
                     <Text style={styles.floodSeverity}>
                       {getSeverityIcon(item.severity)} {item.severity}
@@ -189,7 +225,9 @@ export default function DangerScreen() {
                     </Text>
                   </View>
                   <Text style={styles.floodArea}>{item.areaName}</Text>
-                  <Text style={styles.floodDescription}>{item.description}</Text>
+                  <Text style={styles.floodDescription}>
+                    {item.description}
+                  </Text>
                   <Text style={styles.floodTime}>
                     Reported: {new Date(item.reportTime).toLocaleTimeString()}
                   </Text>
@@ -239,11 +277,13 @@ export default function DangerScreen() {
                 />
                 <View style={styles.levelIndicator}>
                   <Text style={styles.levelLabel}>
-                    {
-                      parseInt(reportData.waterLevel) < 30 ? 'LOW' :
-                      parseInt(reportData.waterLevel) < 100 ? 'MODERATE' :
-                      parseInt(reportData.waterLevel) < 200 ? 'HIGH' : 'CRITICAL'
-                    }
+                    {parseInt(reportData.waterLevel) < 30
+                      ? "LOW"
+                      : parseInt(reportData.waterLevel) < 100
+                        ? "MODERATE"
+                        : parseInt(reportData.waterLevel) < 200
+                          ? "HIGH"
+                          : "CRITICAL"}
                   </Text>
                 </View>
               </View>
@@ -277,53 +317,53 @@ export default function DangerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   centerContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#666',
+    color: "#666",
   },
   header: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderBottomColor: "#eee",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   reportButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: "#FF6B6B",
     borderRadius: 6,
   },
   reportButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   criticalBanner: {
-    backgroundColor: '#FFE4E1',
+    backgroundColor: "#FFE4E1",
     marginHorizontal: 12,
     marginTop: 12,
     padding: 12,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#DC143C',
-    flexDirection: 'row',
+    borderLeftColor: "#DC143C",
+    flexDirection: "row",
     gap: 12,
   },
   criticalIcon: {
@@ -334,13 +374,13 @@ const styles = StyleSheet.create({
   },
   criticalTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#DC143C',
+    fontWeight: "bold",
+    color: "#DC143C",
     marginBottom: 4,
   },
   criticalText: {
     fontSize: 12,
-    color: '#333',
+    color: "#333",
   },
   alertsSection: {
     marginTop: 16,
@@ -348,13 +388,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 12,
     paddingHorizontal: 4,
   },
   alertSummary: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderLeftWidth: 4,
     borderRadius: 6,
     padding: 12,
@@ -363,18 +403,18 @@ const styles = StyleSheet.create({
   },
   alertSummaryTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 4,
   },
   alertSummaryArea: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginBottom: 2,
   },
   alertSummaryDistance: {
     fontSize: 11,
-    color: '#999',
+    color: "#999",
   },
   floodsSection: {
     marginTop: 20,
@@ -382,7 +422,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   floodCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderLeftWidth: 4,
     borderRadius: 8,
     padding: 12,
@@ -390,42 +430,42 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   floodHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   floodSeverity: {
     fontSize: 13,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   floodWaterLevel: {
     fontSize: 11,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
-    color: '#666',
+    color: "#666",
   },
   floodArea: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 6,
   },
   floodDescription: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     lineHeight: 18,
     marginBottom: 6,
   },
   floodTime: {
     fontSize: 10,
-    color: '#999',
+    color: "#999",
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 40,
   },
   emptyIcon: {
@@ -434,42 +474,42 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 4,
   },
   emptySubtext: {
     fontSize: 13,
-    color: '#999',
+    color: "#999",
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '90%',
+    maxHeight: "90%",
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   closeButton: {
     fontSize: 24,
-    color: '#666',
+    color: "#666",
   },
   formContainer: {
     paddingHorizontal: 16,
@@ -478,24 +518,24 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
     marginBottom: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   textArea: {
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   levelContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
     marginBottom: 16,
   },
@@ -503,26 +543,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
     minWidth: 60,
   },
   levelLabel: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#FF6B6B',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#FF6B6B",
+    textAlign: "center",
   },
   submitButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: "#FF6B6B",
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 16,
   },
   submitButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

@@ -49,7 +49,11 @@ export default function RootLayout() {
         options={{
           title: "Report",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="plus-circle" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="plus-circle"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -58,7 +62,11 @@ export default function RootLayout() {
         options={{
           title: "Help",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="help-circle" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="help-circle"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -67,7 +75,11 @@ export default function RootLayout() {
         options={{
           title: "About",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="information" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="information"
+              color={color}
+              size={size}
+            />
           ),
           href: null,
         }}

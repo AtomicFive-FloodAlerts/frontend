@@ -1,20 +1,24 @@
 import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-const image = require("../assets/images/Flood.jpg")
+const image = require("../assets/images/Flood.jpg");
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container} edges={['left', 'right']}>
-          <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <SafeAreaView style={styles.container} edges={["left", "right"]}>
+          <ImageBackground
+            source={image}
+            resizeMode="cover"
+            style={styles.image}
+          >
             <View style={styles.overlay} />
             <View style={styles.contentContainer}>
               <Text style={styles.title}>Flood Alert System</Text>
               <Text style={styles.subtitle}>Stay Safe, Stay Informed</Text>
-              
+
               <View style={styles.statsContainer}>
                 <View style={styles.statCard}>
                   <Text style={styles.statNumber}>Real-Time</Text>
@@ -40,7 +44,9 @@ export default function HomeScreen() {
                 </Text>
               </View>
 
-              <Text style={styles.footer}>Use the navigation below to explore</Text>
+              <Text style={styles.footer}>
+                Use the navigation below to explore
+              </Text>
             </View>
           </ImageBackground>
         </SafeAreaView>
@@ -55,49 +61,49 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    justifyContent: 'flex-start',
-    width: '100%',
-    height: '100%',
+    justifyContent: "flex-start",
+    width: "100%",
+    height: "100%",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     color: "white",
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     color: "#e0e0e0",
     fontSize: 16,
     marginBottom: 30,
-    textAlign: 'center',
+    textAlign: "center",
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginBottom: 30,
     gap: 8,
   },
   statCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     padding: 12,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   statNumber: {
     color: "white",
@@ -108,14 +114,14 @@ const styles = StyleSheet.create({
   statLabel: {
     color: "#ddd",
     fontSize: 11,
-    textAlign: 'center',
+    textAlign: "center",
   },
   infoSection: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 16,
     borderRadius: 10,
     marginBottom: 30,
-    width: '100%',
+    width: "100%",
   },
   infoTitle: {
     color: "white",
@@ -131,6 +137,6 @@ const styles = StyleSheet.create({
   footer: {
     color: "#999",
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

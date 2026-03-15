@@ -2,7 +2,7 @@
  * AlertCard Component - Displays individual alert information
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,10 @@ import {
   TouchableOpacity,
   Animated,
   Alert,
-} from 'react-native';
-import { Alert as AlertData } from './alertService';
-import notificationService from './notificationService';
-import alertService from './alertService';
+} from "react-native";
+import { Alert as AlertData } from "./alertService";
+import notificationService from "./notificationService";
+import alertService from "./alertService";
 
 interface AlertCardProps {
   alert: AlertData;
@@ -34,13 +34,15 @@ export const AlertCard: React.FC<AlertCardProps> = ({
   };
 
   const handleMarkRead = async () => {
-    if (alert.status === 'UNREAD') {
+    if (alert.status === "UNREAD") {
       await alertService.markAlertAsRead(alert.id);
       onRead(alert.id);
     }
   };
 
-  const severityColor = notificationService.getSeverityColor(alert.floodSeverity);
+  const severityColor = notificationService.getSeverityColor(
+    alert.floodSeverity,
+  );
   const bgColor = notificationService.getSeverityBgColor(alert.floodSeverity);
   const severityIcon = getSeverityIcon(alert.floodSeverity);
 
@@ -54,7 +56,7 @@ export const AlertCard: React.FC<AlertCardProps> = ({
       style={[
         styles.card,
         { borderLeftColor: severityColor, backgroundColor: bgColor },
-        alert.status !== 'UNREAD' && styles.readCard,
+        alert.status !== "UNREAD" && styles.readCard,
       ]}
     >
       <View style={styles.header}>
@@ -101,16 +103,16 @@ export const AlertCard: React.FC<AlertCardProps> = ({
 
 function getSeverityIcon(severity: string): string {
   switch (severity) {
-    case 'LOW':
-      return '🟡';
-    case 'MODERATE':
-      return '🟠';
-    case 'HIGH':
-      return '🔴';
-    case 'CRITICAL':
-      return '🚨';
+    case "LOW":
+      return "🟡";
+    case "MODERATE":
+      return "🟠";
+    case "HIGH":
+      return "🔴";
+    case "CRITICAL":
+      return "🚨";
     default:
-      return '⚠️';
+      return "⚠️";
   }
 }
 
@@ -121,8 +123,8 @@ const styles = StyleSheet.create({
     padding: 12,
     marginHorizontal: 10,
     marginVertical: 6,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
+    backgroundColor: "#fff",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -132,9 +134,9 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
   titleSection: {
@@ -143,20 +145,20 @@ const styles = StyleSheet.create({
   },
   severity: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   title: {
     fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   distance: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#666',
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    fontWeight: "600",
+    color: "#666",
+    backgroundColor: "rgba(0,0,0,0.05)",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
@@ -166,50 +168,50 @@ const styles = StyleSheet.create({
   },
   areaText: {
     fontSize: 13,
-    color: '#555',
+    color: "#555",
   },
   preview: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
     marginTop: 4,
   },
   expandedContent: {
     marginTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
+    borderTopColor: "rgba(0,0,0,0.1)",
     paddingTop: 12,
   },
   message: {
     fontSize: 13,
-    color: '#333',
+    color: "#333",
     lineHeight: 19,
     marginBottom: 8,
   },
   timestamp: {
     fontSize: 11,
-    color: '#999',
+    color: "#999",
     marginBottom: 12,
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   button: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   readButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
   },
   dismissButton: {
-    backgroundColor: '#999',
+    backgroundColor: "#999",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
