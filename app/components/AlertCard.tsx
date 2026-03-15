@@ -11,9 +11,9 @@ import {
   Animated,
   Alert,
 } from "react-native";
-import { Alert as AlertData } from "./alertService";
-import notificationService from "./notificationService";
-import alertService from "./alertService";
+import { Alert as AlertData } from "../services/alertService";
+import notificationService from "../services/notificationService";
+import alertService from "../services/alertService";
 
 interface AlertCardProps {
   alert: AlertData;

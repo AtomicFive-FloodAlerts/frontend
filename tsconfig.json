@@ -5,6 +5,8 @@
     "jsx": "react-jsx",
     "target": "esnext",
     "module": "esnext",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
       "@/*": [
