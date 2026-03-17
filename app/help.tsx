@@ -1,17 +1,21 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import AlertsScreen from "./alerts";
 
-
-export default function AboutScreen() {
+export default function HelpScreen() {
   return (
-    
     <View style={styles.container}>
-        <Text style={styles.title}>Help Alert Page</Text>
-                  <Link href="/" asChild>
-                    <Pressable style={styles.button}>
-                      <Text style={styles.buttonText}>Back to Home</Text>
-                    </Pressable>
-                  </Link>
+      <Text style={styles.title}>Alerts</Text>
+
+      <View style={{ flex: 1, width: "100%" }}>
+        <AlertsScreen />
+      </View>
+
+      <Link href="/" asChild>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Back to Home</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }
