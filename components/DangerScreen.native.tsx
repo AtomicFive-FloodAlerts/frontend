@@ -1,7 +1,14 @@
 import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
 
 type Spot = {
@@ -19,7 +26,6 @@ type UserLocation = {
 };
 
 export default function DangerScreen() {
-  // Hardcoded backend data
   const spots: Spot[] = [
     {
       id: 1,
@@ -111,9 +117,8 @@ export default function DangerScreen() {
         }}
       >
         <UrlTile
-          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          urlTemplate="https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
           maximumZ={19}
-          flipY={false}
         />
 
         {spots.map((spot) => (
@@ -144,7 +149,7 @@ export default function DangerScreen() {
                   latitude: spot.latitude,
                   longitude: spot.longitude,
                 }}
-                radius={500}
+                radius={5000}
                 strokeWidth={2}
                 strokeColor="rgba(255,0,0,0.8)"
                 fillColor="rgba(255,0,0,0.25)"
@@ -176,8 +181,19 @@ export default function DangerScreen() {
         )}
       </MapView>
 
+      <Pressable
+        style={styles.attribution}
+        onPress={() =>
+          Linking.openURL("https://carto.com/attributions")
+        }
+      >
+        <Text style={styles.attributionText}>
+          © OpenStreetMap contributors © CARTO
+        </Text>
+      </Pressable>
+
       <View style={styles.legend}>
-        <Text style={styles.legendTitle}>Legend</Text>
+        <Text style={styles.legendTitle}>Alerts Screen</Text>
         <Text>🟢 Your live location</Text>
         <Text>🔴 High danger</Text>
         <Text>🟠 Medium danger</Text>
@@ -212,9 +228,22 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontWeight: "bold",
   },
-  legend: {
+  attribution: {
     position: "absolute",
     bottom: 20,
+    right: 20,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  attributionText: {
+    fontSize: 11,
+    color: "#333",
+  },
+  legend: {
+    position: "absolute",
+    bottom: 60,
     left: 20,
     backgroundColor: "white",
     padding: 10,
