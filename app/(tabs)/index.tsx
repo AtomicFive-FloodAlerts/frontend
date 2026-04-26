@@ -1,3 +1,5 @@
+import { useLowPowerContext } from "@/components/LowPowerMode/LowPowerContext";
+import LowPowerModeScreen from "@/components/LowPowerMode/LowPowerModeScreen";
 import { Link } from "expo-router";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -5,6 +7,10 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 const image = require("@/assets/images/Flood.jpg")
 
 export default function HomeScreen() {
+    const { isLowPower, disableLowPowerMode } = useLowPowerContext();
+    if (isLowPower) {
+    return <LowPowerModeScreen onExit={disableLowPowerMode} />;
+  }
   return (
     <View style={styles.container}>
       <SafeAreaProvider>

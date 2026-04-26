@@ -1,4 +1,4 @@
-  import * as Location from "expo-location";
+import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
+import { useLowPowerContext } from './LowPowerMode/LowPowerContext';
+import LowPowerModeScreen from './LowPowerMode/LowPowerModeScreen';
 
   type Spot = {
     id: number;
@@ -26,13 +28,17 @@ import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
   };
 
   export default function DangerScreen() {
+      const { isLowPower, disableLowPowerMode } = useLowPowerContext();
+        if (isLowPower) {
+        return <LowPowerModeScreen onExit={disableLowPowerMode} />;
+      }
     const [spots, setSpots] = useState<Spot[]>([]);
     const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
-    // Change this:
+    // Change this during checks guys:
     // Android emulator -> http://10.0.2.2:8080/api/maps
-    // Real phone -> http://YOUR_PC_IP:8080/api/maps
-    const API_URL = "https://2zgc595f-8080.asse.devtunnels.ms/api/floods/map";
+    // Real phone -> http://PC_IP:8080/api/maps
+    const API_URL = `http://${process.env.EXPO_PUBLIC_MY_IP}:8080/api/maps`;
 
     useEffect(() => {
       let subscription: Location.LocationSubscription | null = null;
