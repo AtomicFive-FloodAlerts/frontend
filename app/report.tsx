@@ -65,7 +65,51 @@ export default function Report() {
       timestamp: new Date()
     };
 
-    console.log("REPORT:", report);
+    const submitReport = async () => {
+
+      if (!waterLevel || !trend || !roadStatus || !location) {
+        Alert.alert("Error", "Please fill all required fields");
+        return;
+      }
+      const fullDescription = `
+    Trend: ${trend}
+    Road: ${roadStatus}
+    Situation: ${situation}
+    People: ${peopleCount}
+    Vulnerable: ${vulnerable}
+    Injuries: ${injuries}
+    Vehicle: ${vehicleStatus}
+
+    ${description}
+      `;
+
+      const reportData = {
+        reportedById: 1,
+        latitude: 6.9271,  
+        longitude: 79.8612,
+        description: fullDescription,
+        waterLevel: parseInt(waterLevel),
+        areaName: location
+      };
+
+      try {
+        const response = await fetch("http://localhost:8080/api/floods/report", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(reportData)
+        });
+
+        const result = await response.text();
+
+        Alert.alert("Success", result);
+
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Error", "Failed to send report");
+      }
+    };
 
     Alert.alert("Success", "Report submitted!");
   };
