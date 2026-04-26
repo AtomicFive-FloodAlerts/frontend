@@ -21,6 +21,11 @@ export default function Report() {
   const [roadStatus, setRoadStatus] = useState("");
   const [severity, setSeverity] = useState("");
   const [location, setLocation] = useState("");
+  const [situation, setSituation] = useState("");
+  const [peopleCount, setPeopleCount] = useState("");
+  const [vulnerable, setVulnerable] = useState("");
+  const [injuries, setInjuries] = useState("");
+  const [vehicleStatus, setVehicleStatus] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
 
@@ -125,6 +130,54 @@ export default function Report() {
           value={location}
           onChangeText={setLocation}
         />
+
+        <Text style={styles.label}>Current Situation</Text>
+        <View style={styles.pickerBox}>
+          <Picker selectedValue={situation} onValueChange={setSituation}>
+            <Picker.Item label="Select Situation" value="" />
+            <Picker.Item label="In Building" value="Building" />
+            <Picker.Item label="On Road" value="Road" />
+            <Picker.Item label="Stranded" value="Stranded" />
+          </Picker>
+        </View>
+
+
+        <Text style={styles.label}>Number of People</Text>
+        <TextInput
+          placeholder="Enter number of people"
+          style={styles.input}
+          value={peopleCount}
+          onChangeText={setPeopleCount}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>Vulnerable People</Text>
+        <View style={styles.pickerBox}>
+          <Picker selectedValue={vulnerable} onValueChange={setVulnerable}>
+            <Picker.Item label="Select" value="" />
+            <Picker.Item label="Yes" value="Yes" />
+            <Picker.Item label="No" value="No" />
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Any Injuries?</Text>
+        <View style={styles.pickerBox}>
+          <Picker selectedValue={injuries} onValueChange={setInjuries}>
+            <Picker.Item label="Select" value="" />
+            <Picker.Item label="Yes" value="Yes" />
+            <Picker.Item label="No" value="No" />
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Vehicle Condition</Text>
+        <View style={styles.pickerBox}>
+          <Picker selectedValue={vehicleStatus} onValueChange={setVehicleStatus}>
+            <Picker.Item label="Select" value="" />
+            <Picker.Item label="Safe" value="Safe" />
+            <Picker.Item label="Damaged" value="Damaged" />
+            <Picker.Item label="No Vehicle" value="None" />
+          </Picker>
+        </View>
 
 
         <Text style={styles.label}> Description</Text>
