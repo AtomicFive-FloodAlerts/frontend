@@ -7,37 +7,37 @@ const image = require("@/assets/images/Flood.jpg")
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-        <SafeAreaProvider>
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-      <Text style={styles.title}>Disaster Alert App</Text>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container} edges={['left', 'right']}>
+          <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+            <Text style={styles.title}>Disaster Alert App</Text>
 
-      <Link href="/report" asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Report a Disaster</Text>
-        </Pressable>
-      </Link>
+            <Link href="/report" asChild>
+              <Pressable style={styles.button}>
+                <Text style={styles.buttonText}>Report a Disaster</Text>
+              </Pressable>
+            </Link>
 
-      <Link href="/help" asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Alert for Help</Text>
-        </Pressable>
-      </Link>
+            <Link href="/help" asChild>
+              <Pressable style={styles.button}>
+                <Text style={styles.buttonText}>Alert for Help</Text>
+              </Pressable>
+            </Link>
 
-      <Link href="/danger" asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Current Danger Zones</Text>
-        </Pressable>
-      </Link>
+            <Link href="/danger" asChild>
+              <Pressable style={styles.button}>
+                <Text style={styles.buttonText}>Current Danger Zones</Text>
+              </Pressable>
+            </Link>
 
-      <Link href="../about" asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>About This App</Text>
-        </Pressable>
-      </Link>
-            </ImageBackground>
-    </SafeAreaView>
-  </SafeAreaProvider>
+            <Link href="../about" asChild>
+              <Pressable style={styles.button}>
+                <Text style={styles.buttonText}>About This App</Text>
+              </Pressable>
+            </Link>
+          </ImageBackground>
+        </SafeAreaView>
+      </SafeAreaProvider>
     </View>
   );
 }
