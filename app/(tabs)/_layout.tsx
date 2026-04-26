@@ -42,6 +42,12 @@ const TabsLayout = () => {
                         )
                     }}
                     />
+        <Tabs.Screen
+            name="report"
+            options={{
+                href: null,
+        }}
+        />
         <Tabs.Screen 
                     name="settings"
                     options={{
