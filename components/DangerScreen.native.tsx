@@ -1,4 +1,4 @@
-  import * as Location from "expo-location";
+import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -29,10 +29,11 @@ import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
     const [spots, setSpots] = useState<Spot[]>([]);
     const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
-    // Change this:
+
     // Android emulator -> http://10.0.2.2:8080/api/maps
     // Real phone -> http://YOUR_PC_IP:8080/api/maps
-    const API_URL = "https://2zgc595f-8080.asse.devtunnels.ms/api/floods/map";
+    const API_URL = `http://${process.env.EXPO_PUBLIC_MY_IP}:8080/api/maps`;
+    console.log("Logging data from Backend IP:", process.env.EXPO_PUBLIC_MY_IP);
 
     useEffect(() => {
       let subscription: Location.LocationSubscription | null = null;

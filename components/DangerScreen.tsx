@@ -1,6 +1,8 @@
 import { Link } from "expo-router";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useLowPowerContext } from "../hooks/LowPowerMode/LowPowerContext";
+import LowPowerModeScreen from '../hooks/LowPowerMode/LowPowerModeScreen';
 
 type Spot = {
   id: number;
@@ -12,6 +14,10 @@ type Spot = {
 };
 
 export default function DangerScreen() {
+  const { isLowPower, disableLowPowerMode } = useLowPowerContext();
+    if (isLowPower) {
+    return <LowPowerModeScreen onExit={disableLowPowerMode} />;
+  }
   // Hardcoded backend data
   const spots: Spot[] = [
     {
