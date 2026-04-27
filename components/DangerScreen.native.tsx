@@ -10,8 +10,6 @@ import {
   View,
 } from "react-native";
 import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
-import { useLowPowerContext } from '../hooks/LowPowerMode/LowPowerContext';
-import LowPowerModeScreen from '../hooks/LowPowerMode/LowPowerModeScreen';
 
   type Spot = {
     id: number;
@@ -28,17 +26,14 @@ import LowPowerModeScreen from '../hooks/LowPowerMode/LowPowerModeScreen';
   };
 
   export default function DangerScreen() {
-      const { isLowPower, disableLowPowerMode } = useLowPowerContext();
-        if (isLowPower) {
-        return <LowPowerModeScreen onExit={disableLowPowerMode} />;
-      }
     const [spots, setSpots] = useState<Spot[]>([]);
     const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
-    // Change this during checks guys:
+
     // Android emulator -> http://10.0.2.2:8080/api/maps
-    // Real phone -> http://PC_IP:8080/api/maps
+    // Real phone -> http://YOUR_PC_IP:8080/api/maps
     const API_URL = `http://${process.env.EXPO_PUBLIC_MY_IP}:8080/api/maps`;
+    console.log("Logging data from Backend IP:", process.env.EXPO_PUBLIC_MY_IP);
 
     useEffect(() => {
       let subscription: Location.LocationSubscription | null = null;
