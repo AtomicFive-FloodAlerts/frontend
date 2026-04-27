@@ -1,5 +1,5 @@
-import { useLowPowerContext } from "@/components/LowPowerMode/LowPowerContext";
-import LowPowerModeScreen from "@/components/LowPowerMode/LowPowerModeScreen";
+import { useLowPowerContext } from "@/hooks/LowPowerMode/LowPowerContext";
+import LowPowerModeScreen from "@/hooks/LowPowerMode/LowPowerModeScreen";
 import { Link } from "expo-router";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';

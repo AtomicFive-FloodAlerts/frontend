@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
-import { useLowPowerContext } from './LowPowerMode/LowPowerContext';
-import LowPowerModeScreen from './LowPowerMode/LowPowerModeScreen';
+import { useLowPowerContext } from '../hooks/LowPowerMode/LowPowerContext';
+import LowPowerModeScreen from '../hooks/LowPowerMode/LowPowerModeScreen';
 
   type Spot = {
     id: number;

@@ -1,11 +1,10 @@
-import { useLowPowerContext } from "@/components/LowPowerMode/LowPowerContext";
-import LowPowerModeScreen from "@/components/LowPowerMode/LowPowerModeScreen";
+import { useLowPowerContext } from "@/hooks/LowPowerMode/LowPowerContext";
+import LowPowerModeScreen from "@/hooks/LowPowerMode/LowPowerModeScreen";
 import useTheme from "@/hooks/useTheme";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 export default function SettingsScreen() {
-  //  Fixed: hooks must be inside the component
   const { isDarkMode, toggleDarkMode, colors } = useTheme();
   const { isLowPower, enableLowPowerMode, disableLowPowerMode } = useLowPowerContext();
 
@@ -40,7 +39,7 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* ── Power ── */}
+      
       <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>POWER</Text>
       <View style={[styles.card, { backgroundColor: colors.surface, borderColor: isDarkMode ? "#2a2a2a" : "#e5e7eb" }]}>
         <View style={styles.row}>
@@ -70,7 +69,7 @@ export default function SettingsScreen() {
         Pings location once then disables GPS. Sends an immediate flood alert notification.
       </Text>
 
-      {/* ── Navigation ── */}
+        
       <Link href="/" asChild>
         <Pressable style={styles.backButton}>
           <Text style={styles.backButtonText}>Back to Home</Text>

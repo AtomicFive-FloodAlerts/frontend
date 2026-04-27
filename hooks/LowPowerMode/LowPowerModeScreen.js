@@ -13,10 +13,7 @@ import {
 
 /**
  * LowPowerModeScreen
- *
- * Props:
- *   onExit: () => void  — called when user exits low power mode
- *
+ * This screen simulates a "Low Power Mode" for flood alert situations. When activated, it:
  * What it does:
  *   1. Hides all normal UI (renders its own full-screen black overlay)
  *   2. Pings location ONCE then stops GPS
@@ -24,7 +21,7 @@ import {
  *   4. Shows ONLY one button: EXIT LOW POWER MODE
  */
 
-// Configure how notifications appear when app is foregrounded
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -64,7 +61,7 @@ export default function LowPowerModeScreen({ onExit }) {
           return;
         }
 
-        // Single location fetch — no continuous tracking
+        // Single location fetch 
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.Balanced,
         });
@@ -104,7 +101,7 @@ export default function LowPowerModeScreen({ onExit }) {
             priority: Notifications.AndroidNotificationPriority.MAX,
             color: '#FF0000',
           },
-          trigger: null, // Send immediately
+          trigger: null, 
         });
 
         setNotifSent(true);
@@ -120,13 +117,12 @@ export default function LowPowerModeScreen({ onExit }) {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
 
-      {/* ── Header ── */}
+      
       <View style={styles.header}>
         <Animated.View style={[styles.alertDot, { transform: [{ scale: pulseAnim }] }]} />
         <Text style={styles.headerTitle}>LOW POWER MODE</Text>
       </View>
 
-      {/* ── Status Info ── */}
       <View style={styles.statusBlock}>
         <Text style={styles.statusLabel}>FLOOD ALERT SYSTEM</Text>
         <Text style={styles.statusDivider}>────────────────────</Text>
@@ -154,7 +150,6 @@ export default function LowPowerModeScreen({ onExit }) {
         <Text style={styles.locationText}>{locationText}</Text>
       </View>
 
-      {/* ── Single Exit Button ── */}
       <TouchableOpacity style={styles.exitButton} onPress={onExit} activeOpacity={0.7}>
         <Text style={styles.exitButtonText}>EXIT LOW POWER MODE</Text>
       </TouchableOpacity>
@@ -173,8 +168,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 28,
-    // Grayscale filter — applies to the entire screen on supported platforms
-    ...(Platform.OS === 'ios' ? {} : {}), // Grayscale is handled via color choices
+    ...(Platform.OS === 'ios' ? {} : {}), 
   },
 
   header: {
