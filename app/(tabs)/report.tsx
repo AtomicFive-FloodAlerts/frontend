@@ -14,14 +14,17 @@ import * as ImagePicker from "expo-image-picker";
 import { Link, useLocalSearchParams } from "expo-router";
 import useTheme from "@/hooks/useTheme";
 
-export default function Report() {
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
 
+export default function Report() {
   const { colors } = useTheme();
 
   const [waterLevel, setWaterLevel] = useState("");
   const [trend, setTrend] = useState("");
   const [roadStatus, setRoadStatus] = useState("");
-  const [location, setLocation] = useState("");
   const [situation, setSituation] = useState("");
   const [peopleCount, setPeopleCount] = useState("");
   const [vulnerable, setVulnerable] = useState("");
@@ -29,21 +32,23 @@ export default function Report() {
   const [vehicleStatus, setVehicleStatus] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
-  const [coordinates, setCoordinates] = useState<any>(null);
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
   const params = useLocalSearchParams();
 
-
   useEffect(() => {
-    if (params.lat && params.lon) {
-      setCoordinates({
-        latitude: Number(params.lat),
-        longitude: Number(params.lon),
-      });
-      setLocation("Selected from map");
-    }
-  }, [params]);
+    if (params.lat && params.lon && !coordinates) {
+      const lat = Number(params.lat);
+      const lon = Number(params.lon);
 
+      if (!isNaN(lat) && !isNaN(lon)) {
+        setCoordinates({
+          latitude: lat,
+          longitude: lon,
+        });
+      }
+    }
+  }, [params.lat, params.lon]);
 
   const pickImage = async () => {
     let permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -55,7 +60,7 @@ export default function Report() {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1
+      quality: 1,
     });
 
     if (!result.canceled) {
@@ -63,11 +68,14 @@ export default function Report() {
     }
   };
 
-
   const submitReport = async () => {
-
-    if (!waterLevel || !trend || !roadStatus || !location) {
+    if (!waterLevel || !trend || !roadStatus) {
       Alert.alert("Error", "Please fill all required fields");
+      return;
+    }
+
+    if (!coordinates) {
+      Alert.alert("Error", "Please select location from map");
       return;
     }
 
@@ -85,25 +93,23 @@ ${description}
 
     const reportData = {
       reportedById: 1,
-      latitude: coordinates?.latitude || 6.9271,
-      longitude: coordinates?.longitude || 79.8612,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
       description: fullDescription,
       waterLevel: parseInt(waterLevel),
-      areaName: location
+      areaName: "Selected from map",
     };
 
     try {
-      const response = await fetch("http://192.168.1.5:8080/api/floods/report", {
+      await fetch("http://192.168.133.4:8080/api/floods/report", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(reportData)
+        body: JSON.stringify(reportData),
       });
 
-      const result = await response.text();
-      Alert.alert("Success", result);
-
+      Alert.alert("Success", "Report submitted successfully!");
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Failed to send report");
@@ -111,21 +117,26 @@ ${description}
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.surface  }]}>
-
-      <Text style={[styles.title, { color: colors.text }]}>Flood Report</Text>
+    <ScrollView style={[styles.container, { backgroundColor: colors.surface }]}>
+      <Text style={[styles.title, { color: colors.text }]}>
+        Flood Report
+      </Text>
 
       <View style={[styles.card, { backgroundColor: colors.surface }]}>
-
-        <Text style={[styles.label, { color: colors.text }]}>Water Level (cm)</Text>
+        {/* Water Level */}
+        <Text style={[styles.label, { color: colors.text }]}>
+          Water Level (cm)
+        </Text>
         <TextInput
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
+          style={[styles.input, { color: colors.text }]}
           value={waterLevel}
           onChangeText={setWaterLevel}
           keyboardType="numeric"
         />
 
-        <Text style={[styles.label, { color: colors.text }]}>Water Trend</Text>
+        <Text style={[styles.label, { color: colors.text }]}>
+          Water Trend
+        </Text>
         <View style={styles.pickerBox}>
           <Picker selectedValue={trend} onValueChange={setTrend}>
             <Picker.Item label="Select Trend" value="" />
@@ -135,7 +146,9 @@ ${description}
           </Picker>
         </View>
 
-        <Text style={[styles.label, { color: colors.text }]}>Road Status</Text>
+        <Text style={[styles.label, { color: colors.text }]}>
+          Road Status
+        </Text>
         <View style={styles.pickerBox}>
           <Picker selectedValue={roadStatus} onValueChange={setRoadStatus}>
             <Picker.Item label="Select Status" value="" />
@@ -144,20 +157,26 @@ ${description}
           </Picker>
         </View>
 
-        <Text style={[styles.label, { color: colors.text }]}>Location</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
-          value={location}
-          onChangeText={setLocation}
-        />
+        <Text style={{ color: colors.text, marginBottom: 10 }}>
+          {coordinates
+            ? `Selected: ${coordinates.latitude.toFixed(4)}, ${coordinates.longitude.toFixed(4)}`
+            : "No location selected"}
+        </Text>
 
-        <Link href="/danger" asChild>
+        <Link
+          href={{ pathname: "/danger", params: { mode: "select" } }}
+          asChild
+        >
           <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Pick Location from Map</Text>
+            <Text style={styles.buttonText}>
+              {coordinates ? "Change Location" : "Pick Location from Map"}
+            </Text>
           </TouchableOpacity>
         </Link>
 
-        <Text style={[styles.label, { color: colors.text }]}>Situation</Text>
+        <Text style={[styles.label, { color: colors.text }]}>
+          Situation
+        </Text>
         <View style={styles.pickerBox}>
           <Picker selectedValue={situation} onValueChange={setSituation}>
             <Picker.Item label="Select" value="" />
@@ -167,17 +186,21 @@ ${description}
           </Picker>
         </View>
 
-        <Text style={[styles.label, { color: colors.text }]}>People Count</Text>
+        <Text style={[styles.label, { color: colors.text }]}>
+          People Count
+        </Text>
         <TextInput
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
+          style={[styles.input, { color: colors.text }]}
           value={peopleCount}
           onChangeText={setPeopleCount}
           keyboardType="numeric"
         />
 
-        <Text style={[styles.label, { color: colors.text }]}>Description</Text>
+        <Text style={[styles.label, { color: colors.text }]}>
+          Description
+        </Text>
         <TextInput
-          style={[styles.input, { height: 80, backgroundColor: colors.surface, color: colors.text }]}
+          style={[styles.input, { height: 80, color: colors.text }]}
           value={description}
           onChangeText={setDescription}
           multiline
@@ -195,13 +218,11 @@ ${description}
             style={{ width: "100%", height: 200, marginTop: 10 }}
           />
         )}
-
       </View>
 
       <TouchableOpacity style={styles.button} onPress={submitReport}>
         <Text style={styles.buttonText}>Submit Report</Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 }
@@ -215,5 +236,5 @@ const styles = StyleSheet.create({
   pickerBox: { borderWidth: 1, marginBottom: 10 },
   uploadBox: { padding: 10, backgroundColor: "#ddd", marginTop: 10 },
   button: { backgroundColor: "#2563eb", padding: 15, margin: 10 },
-  buttonText: { color: "#fff", textAlign: "center" }
+  buttonText: { color: "#fff", textAlign: "center" },
 });

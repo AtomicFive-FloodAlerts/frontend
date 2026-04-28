@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import { Link, useRouter } from "expo-router";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -32,12 +32,14 @@ export default function DangerScreen() {
   const [spots, setSpots] = useState<Spot[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<any>(null); 
+  const params = useLocalSearchParams();
+  const mode = params.mode;
 
   // Change this:
   // Android emulator -> http://10.0.2.2:8080/api/maps
   // Real phone -> http://YOUR_PC_IP:8080/api/maps
 
-  const API_URL = "https://2zgc595f-8080.asse.devtunnels.ms/api/floods/map";
+  const API_URL = "http://192.168.133.4:8080/api/floods/map";
 
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;
@@ -119,9 +121,11 @@ export default function DangerScreen() {
 
         
         onPress={(e) => {
+          if (mode !== "select") return; 
+
           setSelectedLocation(e.nativeEvent.coordinate);
         }}
-      >
+              >
         <UrlTile
           urlTemplate="https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
           maximumZ={19}
@@ -187,9 +191,9 @@ export default function DangerScreen() {
         )}
 
 
-        {selectedLocation && (
-          <Marker coordinate={selectedLocation} pinColor="blue" />
-        )}
+        {mode === "select" && selectedLocation && ( (
+          <Marker coordinate={selectedLocation} pinColor="green" />
+        ))}
 
       </MapView>
 
@@ -216,7 +220,7 @@ export default function DangerScreen() {
         </Link>
       </View>
 
-      {selectedLocation && (
+      {mode === "select" && selectedLocation && (
         <Pressable
           style={{
             position: "absolute",
@@ -229,7 +233,7 @@ export default function DangerScreen() {
           }}
           onPress={() => {
             router.push({
-              pathname: "/report",
+              pathname: "/(tabs)/report",
               params: {
                 lat: selectedLocation.latitude,
                 lon: selectedLocation.longitude,
