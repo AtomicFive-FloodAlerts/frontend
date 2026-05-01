@@ -1,6 +1,7 @@
+import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
-import { Link, useRouter, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Linking,
@@ -41,10 +42,7 @@ export default function DangerScreen() {
 
   const API_URL = "http://192.168.133.4:8080/api/floods/map";
 
-  useEffect(() => {
-    let subscription: Location.LocationSubscription | null = null;
-
-    const fetchSpots = async () => {
+  const fetchSpots = async () => {
       try {
         const response = await fetch(API_URL);
 
@@ -58,7 +56,16 @@ export default function DangerScreen() {
         console.error("Fetch error:", error);
         Alert.alert("Error", "Could not load map data from backend.");
       }
-    };
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSpots();
+    }, [])
+  );
+
+  useEffect(() => {
+    let subscription: Location.LocationSubscription | null = null;
 
     const startTracking = async () => {
       try {
@@ -93,7 +100,6 @@ export default function DangerScreen() {
       }
     };
 
-    fetchSpots();
     startTracking();
 
     return () => {
@@ -191,12 +197,12 @@ export default function DangerScreen() {
         )}
 
 
-        {mode === "select" && selectedLocation && ( (
-          <Marker coordinate={selectedLocation} pinColor="green" />
-        ))}
+        {mode === "select" && selectedLocation && ( 
+          <Marker coordinate={selectedLocation} pinColor="purple" />
+        )}
 
       </MapView>
-
+ 
       <Pressable
         style={styles.attribution}
         onPress={() => Linking.openURL("https://carto.com/attributions")}
@@ -239,6 +245,7 @@ export default function DangerScreen() {
                 lon: selectedLocation.longitude,
               },
             });
+            setSelectedLocation(null);
           }}
         >
           <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
