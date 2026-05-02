@@ -51,6 +51,7 @@ export default function DangerScreen() {
         }
 
         const data: Spot[] = await response.json();
+        console.log("API DATA:", data);
         setSpots(data);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -63,6 +64,12 @@ export default function DangerScreen() {
       fetchSpots();
     }, [])
   );
+
+  useEffect(() => {
+    if (params.refresh) {
+      fetchSpots();
+    }
+  }, [params.refresh]);
 
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;

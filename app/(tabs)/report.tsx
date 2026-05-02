@@ -115,18 +115,36 @@ ${description}
     };
 
     try {
-      await fetch("http://192.168.133.4:8080/api/floods/report", {
+      console.log("SENDING DATA:", reportData);
+
+      const res = await fetch("http://192.168.133.4:8080/api/floods/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(reportData),
       });
 
+      const text = await res.text();
+
+      console.log("STATUS:", res.status);
+      console.log("RESPONSE:", text);
+
+      if (!res.ok) {
+        Alert.alert("Error", "Backend rejected request");
+        return;
+      }
+
       Alert.alert("Success", "Report submitted successfully!");
+
       resetForm();
-      router.replace("/danger");
+
+      router.replace({
+        pathname: "/danger",
+        params: { refresh: Date.now() },
+      });
+
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Failed to send report");
+      console.error("FETCH ERROR:", error);
+      Alert.alert("Error", "Network error");
     }
   };
 
