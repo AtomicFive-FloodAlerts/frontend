@@ -150,24 +150,37 @@ ${description}
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.surface }]}>
+      
       <Text style={[styles.title, { color: colors.text }]}>
         Flood Report
       </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.section}>Basic Info</Text>
+      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        
+        <Text style={[styles.section, { color: colors.text }]}>Basic Info</Text>
 
-        <Text>Water Level (cm)</Text>
+        <Text style={{ color: colors.text }}>Water Level (cm)</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.surface,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
           value={waterLevel}
           onChangeText={setWaterLevel}
           keyboardType="numeric"
         />
 
-        <Text>Water Trend</Text>
-        <View style={styles.pickerBox}>
-          <Picker selectedValue={trend} onValueChange={setTrend}>
+        <Text style={{ color: colors.text }}>Water Trend</Text>
+        <View style={[styles.pickerBox, { borderColor: colors.border }]}>
+          <Picker
+            selectedValue={trend}
+            onValueChange={setTrend}
+            style={{ color: colors.text }}
+          >
             <Picker.Item label="Select" value="" />
             <Picker.Item label="Rising" value="Rising" />
             <Picker.Item label="Stable" value="Stable" />
@@ -175,8 +188,7 @@ ${description}
           </Picker>
         </View>
 
-  
-        <Text>
+        <Text style={{ color: colors.text }}>
           {coordinates
             ? `Selected: ${coordinates.latitude.toFixed(4)}, ${coordinates.longitude.toFixed(4)}`
             : "No location selected"}
@@ -188,9 +200,9 @@ ${description}
           </TouchableOpacity>
         </Link>
 
-        <Text style={styles.section}>Impact</Text>
+        <Text style={[styles.section, { color: colors.text }]}>Impact</Text>
 
-        <Text>Are people affected?</Text>
+        <Text style={{ color: colors.text }}>Are people affected?</Text>
         <Picker selectedValue={peopleAffected} onValueChange={setPeopleAffected}>
           <Picker.Item label="Select" value="" />
           <Picker.Item label="Yes" value="yes" />
@@ -199,22 +211,29 @@ ${description}
 
         {peopleAffected === "yes" && (
           <>
-            <Text>People Count</Text>
+            <Text style={{ color: colors.text }}>People Count</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.surface,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               value={peopleCount}
               onChangeText={setPeopleCount}
               keyboardType="numeric"
             />
 
-            <Text>Injuries?</Text>
+            <Text style={{ color: colors.text }}>Injuries?</Text>
             <Picker selectedValue={injuries} onValueChange={setInjuries}>
               <Picker.Item label="Select" value="" />
               <Picker.Item label="Yes" value="Yes" />
               <Picker.Item label="No" value="No" />
             </Picker>
 
-            <Text>Vulnerable Groups</Text>
+            <Text style={{ color: colors.text }}>Vulnerable Groups</Text>
             <Picker selectedValue={vulnerable} onValueChange={setVulnerable}>
               <Picker.Item label="Select" value="" />
               <Picker.Item label="None" value="None" />
@@ -227,7 +246,7 @@ ${description}
           </>
         )}
 
-        <Text>Is road blocked?</Text>
+        <Text style={{ color: colors.text }}>Is road blocked?</Text>
         <Picker selectedValue={roadBlocked} onValueChange={setRoadBlocked}>
           <Picker.Item label="Select" value="" />
           <Picker.Item label="Yes" value="yes" />
@@ -236,7 +255,7 @@ ${description}
 
         {roadBlocked === "yes" && (
           <>
-            <Text>Vehicle Status</Text>
+            <Text style={{ color: colors.text }}>Vehicle Status</Text>
             <Picker selectedValue={vehicleStatus} onValueChange={setVehicleStatus}>
               <Picker.Item label="Select" value="" />
               <Picker.Item label="No vehicles affected" value="None" />
@@ -248,18 +267,31 @@ ${description}
           </>
         )}
 
-        <Text style={styles.section}>Additional Info</Text>
+        <Text style={[styles.section, { color: colors.text }]}>Additional Info</Text>
 
-        <Text>Description</Text>
+        <Text style={{ color: colors.text }}>Description</Text>
         <TextInput
-          style={[styles.input, { height: 80 }]}
+          style={[
+            styles.input,
+            {
+              height: 80,
+              backgroundColor: colors.surface,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
           value={description}
           onChangeText={setDescription}
           multiline
         />
 
-        <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
-          <Text>{image ? "Change Image" : "Upload Image"}</Text>
+        <TouchableOpacity
+          style={[styles.uploadBox, { backgroundColor: colors.border }]}
+          onPress={pickImage}
+        >
+          <Text style={{ color: colors.text }}>
+            {image ? "Change Image" : "Upload Image"}
+          </Text>
         </TouchableOpacity>
 
         {image && (
@@ -273,14 +305,36 @@ ${description}
       <TouchableOpacity style={styles.button} onPress={submitReport}>
         <Text style={styles.buttonText}>Submit Report</Text>
       </TouchableOpacity>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  title: { fontSize: 24, textAlign: "center", marginTop: 20 },
-  card: { margin: 15, padding: 15, borderRadius: 10 },
+  container: {
+    flex: 1,
+    backgroundColor: "#eef2ff",
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#1e3a8a",
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
 
   section: {
     fontWeight: "bold",
@@ -289,32 +343,48 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 
+  label: {
+    marginBottom: 5,
+    fontWeight: "600",
+    color: "#374151",
+  },
+
   input: {
+    backgroundColor: "#f9fafb",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 15,
     borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
+    borderColor: "#ddd",
   },
 
   pickerBox: {
+    backgroundColor: "#f9fafb",
+    borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 10,
+    borderColor: "#ddd",
+    marginBottom: 15,
   },
 
   uploadBox: {
-    padding: 10,
-    backgroundColor: "#ddd",
+    backgroundColor: "#e0ecff",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
     marginTop: 10,
   },
 
   button: {
     backgroundColor: "#2563eb",
-    padding: 15,
-    margin: 10,
+    margin: 20,
+    padding: 18,
+    borderRadius: 12,
+    alignItems: "center",
   },
 
   buttonText: {
     color: "#fff",
-    textAlign: "center",
+    fontSize: 18,
     fontWeight: "bold",
   },
 });
