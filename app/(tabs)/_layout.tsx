@@ -42,11 +42,14 @@ const TabsLayout = () => {
                         )
                     }}
                     />
-        <Tabs.Screen
+        <Tabs.Screen 
             name="report"
-            options={{
-                href: null,
-        }}
+            options={{ 
+                title: "Report",
+                tabBarIcon: ({color, size}) => (
+                <Ionicons name="create-outline" size={size} color={color} />
+                )
+            }}
         />
         <Tabs.Screen 
                     name="settings"
