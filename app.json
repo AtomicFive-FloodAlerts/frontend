@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "FlooadAlerts",
-    "slug": "FlooadAlerts",
+    "name": "FloodAlerts",
+    "slug": "FloodAlerts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "flooadalerts",
+    "scheme": "floodalerts",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
