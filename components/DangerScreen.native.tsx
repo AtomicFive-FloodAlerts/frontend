@@ -1,7 +1,15 @@
+import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
-import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Alert,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MapView, { Callout, Circle, Marker, UrlTile } from "react-native-maps";
 
 type Spot = {
@@ -19,35 +27,49 @@ type UserLocation = {
 };
 
 export default function DangerScreen() {
-  // Hardcoded backend data
-  const spots: Spot[] = [
-    {
-      id: 1,
-      name: "Flood Zone",
-      description: "Heavy flooding reported here",
-      latitude: 6.9271,
-      longitude: 79.8612,
-      priority: "HIGH",
-    },
-    {
-      id: 2,
-      name: "Relief Camp",
-      description: "Shelter and food available",
-      latitude: 6.924,
-      longitude: 79.855,
-      priority: "MEDIUM",
-    },
-    {
-      id: 3,
-      name: "Hospital",
-      description: "Emergency medical support",
-      latitude: 6.93,
-      longitude: 79.865,
-      priority: "LOW",
-    },
-  ];
 
+  const router = useRouter(); 
+
+  const [spots, setSpots] = useState<Spot[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null); 
+  const params = useLocalSearchParams();
+  const mode = params.mode;
+
+  // Change this:
+  // Android emulator -> http://10.0.2.2:8080/api/maps
+  // Real phone -> http://YOUR_PC_IP:8080/api/maps
+
+  const API_URL = "http://192.168.133.4:8080/api/floods/map";
+
+  const fetchSpots = async () => {
+      try {
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data: Spot[] = await response.json();
+        console.log("API DATA:", data);
+        setSpots(data);
+      } catch (error) {
+        console.error("Fetch error:", error);
+        Alert.alert("Error", "Could not load map data from backend.");
+      }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSpots();
+    }, [])
+  );
+
+  useEffect(() => {
+    if (params.refresh) {
+      fetchSpots();
+    }
+  }, [params.refresh]);
 
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;
@@ -109,11 +131,17 @@ export default function DangerScreen() {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
-      >
+
+        
+        onPress={(e) => {
+          if (mode !== "select") return; 
+
+          setSelectedLocation(e.nativeEvent.coordinate);
+        }}
+              >
         <UrlTile
-          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          urlTemplate="https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
           maximumZ={19}
-          flipY={false}
         />
 
         {spots.map((spot) => (
@@ -144,7 +172,7 @@ export default function DangerScreen() {
                   latitude: spot.latitude,
                   longitude: spot.longitude,
                 }}
-                radius={500}
+                radius={5000}
                 strokeWidth={2}
                 strokeColor="rgba(255,0,0,0.8)"
                 fillColor="rgba(255,0,0,0.25)"
@@ -174,10 +202,25 @@ export default function DangerScreen() {
             pinColor="green"
           />
         )}
+
+
+        {mode === "select" && selectedLocation && ( 
+          <Marker coordinate={selectedLocation} pinColor="purple" />
+        )}
+
       </MapView>
+ 
+      <Pressable
+        style={styles.attribution}
+        onPress={() => Linking.openURL("https://carto.com/attributions")}
+      >
+        <Text style={styles.attributionText}>
+          © OpenStreetMap contributors © CARTO
+        </Text>
+      </Pressable>
 
       <View style={styles.legend}>
-        <Text style={styles.legendTitle}>Legend</Text>
+        <Text style={styles.legendTitle}>Alerts Screen</Text>
         <Text>🟢 Your live location</Text>
         <Text>🔴 High danger</Text>
         <Text>🟠 Medium danger</Text>
@@ -189,41 +232,64 @@ export default function DangerScreen() {
           </Pressable>
         </Link>
       </View>
+
+      {mode === "select" && selectedLocation && (
+        <Pressable
+          style={{
+            position: "absolute",
+            bottom: 140,
+            left: 20,
+            right: 20,
+            backgroundColor: "#2563eb",
+            padding: 15,
+            borderRadius: 10,
+          }}
+          onPress={() => {
+            router.push({
+              pathname: "/(tabs)/report",
+              params: {
+                lat: selectedLocation.latitude,
+                lon: selectedLocation.longitude,
+              },
+            });
+            setSelectedLocation(null);
+          }}
+        >
+          <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
+            Confirm Location
+          </Text>
+        </Pressable>
+      )}
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  callout: {
-    width: 180,
-  },
-  calloutTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  calloutPriority: {
-    marginTop: 4,
-    fontWeight: "bold",
-  },
-  legend: {
+  container: { flex: 1 },
+  map: { flex: 1 },
+  callout: { width: 180 },
+  calloutTitle: { fontWeight: "bold", fontSize: 16, marginBottom: 4 },
+  calloutPriority: { marginTop: 4, fontWeight: "bold" },
+  attribution: {
     position: "absolute",
     bottom: 20,
+    right: 20,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  attributionText: { fontSize: 11, color: "#333" },
+  legend: {
+    position: "absolute",
+    bottom: 60,
     left: 20,
     backgroundColor: "white",
     padding: 10,
     borderRadius: 10,
   },
-  legendTitle: {
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
+  legendTitle: { fontWeight: "bold", marginBottom: 5 },
   button: {
     backgroundColor: "#16a34a",
     paddingVertical: 10,
@@ -231,9 +297,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-  },
+  buttonText: { color: "#fff", fontSize: 15, fontWeight: "600" },
 });
