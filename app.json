@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "FlooadAlerts",
-    "slug": "FlooadAlerts",
+    "name": "FloodAlerts",
+    "owner": "sesathviiyaah",
+    "slug": "FloodAlerts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "flooadalerts",
+    "scheme": "floodalerts",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -19,7 +20,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sesathviiyaah.FloodAlerts"
     },
     "web": {
       "output": "static",
@@ -38,7 +40,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
