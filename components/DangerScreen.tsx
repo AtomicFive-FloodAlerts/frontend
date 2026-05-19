@@ -1,6 +1,10 @@
 import { Link } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { useLowPowerContext } from "../hooks/LowPowerMode/LowPowerContext";
+import LowPowerModeScreen from "../hooks/LowPowerMode/LowPowerModeScreen";
+
+const LeafletMap = React.lazy(() => import("../components/LeafletMap.web"));
 
 type Spot = {
   id: number;
@@ -11,104 +15,175 @@ type Spot = {
   priority: "HIGH" | "MEDIUM" | "LOW";
 };
 
+type UserLocation = {
+  latitude: number;
+  longitude: number;
+};
+
 export default function DangerScreen() {
-  // Hardcoded backend data
-  const spots: Spot[] = [
-    {
-      id: 1,
-      name: "Flood Zone",
-      description: "Heavy flooding reported here",
-      latitude: 6.9271,
-      longitude: 79.8612,
-      priority: "HIGH",
-    },
-    {
-      id: 2,
-      name: "Relief Camp",
-      description: "Shelter and food available",
-      latitude: 6.924,
-      longitude: 79.855,
-      priority: "MEDIUM",
-    },
-    {
-      id: 3,
-      name: "Hospital",
-      description: "Emergency medical support",
-      latitude: 6.93,
-      longitude: 79.865,
-      priority: "LOW",
-    },
-  ];
+  const { isLowPower, disableLowPowerMode } = useLowPowerContext();
+  const [spots, setSpots]               = useState<Spot[]>([]);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [fetchError, setFetchError]     = useState(false);
+  const [isMounted, setIsMounted]       = useState(false);
+  const watchIdRef                      = useRef<number | null>(null);
+
+  const API_URL = `http://${process.env.EXPO_PUBLIC_MY_IP}:8080/api/maps`;
+
+  useEffect(() => {
+    setIsMounted(true);
+
+    const fetchSpots = async () => {
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Spot[] = await res.json();
+        setSpots(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setFetchError(true);
+      }
+    };
+
+    const startTracking = () => {
+      if (!navigator.geolocation) return;
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) =>
+          setUserLocation({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }),
+        (err) => console.warn("Geolocation error:", err),
+        { enableHighAccuracy: true }
+      );
+
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (pos) =>
+          setUserLocation({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }),
+        (err) => console.warn("Watch error:", err),
+        { enableHighAccuracy: true, maximumAge: 5000 }
+      );
+    };
+
+    fetchSpots();
+    startTracking();
+
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
+
+  if (isLowPower) {
+    return <LowPowerModeScreen onExit={disableLowPowerMode} />;
+  }
 
   return (
-    <View style={styles.webContainer}>
-      <Text style={styles.webTitle}>Danger Map</Text>
-      <Text style={styles.webText}>Web version coming in future.</Text>
-      <Text style={styles.webText}>
-        Open this page on Android or iPhone to see the live disaster map.
-      </Text>
+    <View style={styles.container}>
 
-      <Link href="/" asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Back to Home</Text>
-        </Pressable>
-      </Link>
+      {isMounted && (
+        <View style={StyleSheet.absoluteFill}>
+          <Suspense
+            fallback={
+              <View style={styles.loader}>
+                <Text>Loading map…</Text>
+              </View>
+            }
+          >
+            <LeafletMap spots={spots} userLocation={userLocation} />
+          </Suspense>
+        </View>
+      )}
 
-      <View style={styles.webBox}>
-        <Text style={styles.legendTitle}>Hardcoded important spots</Text>
-        {spots.map((spot) => (
-          <Text key={spot.id} style={styles.webSpot}>
-            {spot.name} - {spot.priority}
-          </Text>
-        ))}
+      <Pressable
+        style={styles.attribution}
+        onPress={() => Linking.openURL("https://carto.com/attributions")}
+      >
+        <Text style={styles.attributionText}>
+          © OpenStreetMap contributors © CARTO
+        </Text>
+      </Pressable>
+
+      <View style={styles.legend}>
+        <Text style={styles.legendTitle}>Alerts Screen</Text>
+        <Text>🟢 Your live location</Text>
+        <Text>🔴 High danger</Text>
+        <Text>🟠 Medium danger</Text>
+        <Text>🔵 Low danger</Text>
+        {fetchError && (
+          <Text style={styles.errorText}>⚠️ Could not load map data</Text>
+        )}
+        <Link href="/" asChild>
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>Back to Home</Text>
+          </Pressable>
+        </Link>
       </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  webContainer: {
+  container: {
+    flex: 1,
+  },
+  loader: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
-    backgroundColor: "#f5f5f5",
   },
-  webTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 12,
+  attribution: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    zIndex: 1000,
   },
-  webText: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 8,
+  attributionText: {
+    fontSize: 11,
+    color: "#333",
   },
-  webBox: {
-    marginTop: 20,
+  legend: {
+    position: "absolute",
+    bottom: 60,
+    left: 20,
     backgroundColor: "white",
-    padding: 16,
+    padding: 10,
     borderRadius: 10,
-    width: "100%",
-  },
-  webSpot: {
-    fontSize: 15,
-    marginTop: 6,
+    zIndex: 1000,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
   },
   legendTitle: {
     fontWeight: "bold",
     marginBottom: 5,
   },
+  errorText: {
+    color: "#ef4444",
+    fontSize: 12,
+    marginTop: 4,
+  },
   button: {
     backgroundColor: "#16a34a",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 10,
-    marginTop: 12,
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
   },
 });

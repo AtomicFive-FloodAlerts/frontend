@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "hooks/LowPowerMode/LowPowerContext.js", "hooks/LowPowerMode/LowPowerModeScreen.js", "hooks/LowPowerMode/useLowPowerMode.js"  ]
 }
