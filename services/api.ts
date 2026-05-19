@@ -15,8 +15,4 @@ export const loginUser = async (data: any) => {
   return await API.post("/login", data);
 };
 
-export const googleLogin = async (token: string) => {
-  return await API.post("/google", { token });
-};
-
 export default API;
