@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://10.55.106.249:8080/api/auth",
+  baseURL: `http://${process.env.EXPO_PUBLIC_MY_IP}:8080/api/auth`,
   headers: {
     "Content-Type": "application/json",
   },
