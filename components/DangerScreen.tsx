@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { useLowPowerContext } from "../hooks/LowPowerMode/LowPowerContext";
@@ -24,11 +24,20 @@ export default function DangerScreen() {
   const { isLowPower, disableLowPowerMode } = useLowPowerContext();
   const [spots, setSpots]               = useState<Spot[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const [fetchError, setFetchError]     = useState(false);
   const [isMounted, setIsMounted]       = useState(false);
   const watchIdRef                      = useRef<number | null>(null);
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const mode = params.mode;
+const refresh = params.refresh;
+  
 
-  const API_URL = `http://${process.env.EXPO_PUBLIC_MY_IP}:8080/api/maps`;
+  const API_URL = `http://${process.env.EXPO_PUBLIC_API_HOST}:8080/api/floods/map`;
 
   useEffect(() => {
     setIsMounted(true);
@@ -44,6 +53,8 @@ export default function DangerScreen() {
         setFetchError(true);
       }
     };
+
+ 
 
     const startTracking = () => {
       if (!navigator.geolocation) return;
@@ -77,7 +88,7 @@ export default function DangerScreen() {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, []);
+  }, [refresh]);
 
   if (isLowPower) {
     return <LowPowerModeScreen onExit={disableLowPowerMode} />;
@@ -95,7 +106,17 @@ export default function DangerScreen() {
               </View>
             }
           >
-            <LeafletMap spots={spots} userLocation={userLocation} />
+            <LeafletMap
+                spots={spots}
+                userLocation={userLocation}
+                selectedLocation={selectedLocation}
+                onSelectLocation={(lat, lon) =>
+                  setSelectedLocation({
+                    latitude: lat,
+                    longitude: lon,
+                  })
+                }
+            />
           </Suspense>
         </View>
       )}
@@ -124,6 +145,23 @@ export default function DangerScreen() {
           </Pressable>
         </Link>
       </View>
+
+      {mode === "select" && selectedLocation && (
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            router.push({
+              pathname: "/(tabs)/report",
+              params: {
+                lat: selectedLocation.latitude,
+                lon: selectedLocation.longitude,
+              },
+            });
+          }}
+        >
+          <Text style={styles.buttonText}>Confirm Location</Text>
+        </Pressable>
+      )}
 
     </View>
   );

@@ -40,7 +40,7 @@ export default function DangerScreen() {
   // Android emulator -> http://10.0.2.2:8080/api/maps
   // Real phone -> http://YOUR_PC_IP:8080/api/maps
 
-  const API_URL = "http://192.168.133.4:8080/api/floods/map";
+  const API_URL = `http://${process.env.EXPO_PUBLIC_API_HOST}:8080/api/floods/map`;
 
   const fetchSpots = async () => {
       try {

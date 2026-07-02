@@ -106,20 +106,24 @@ ${description}
 `;
 
     const reportData = {
-      reportedById: 1,
+      reportedById: 42,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
       description: fullDescription,
       waterLevel: parseInt(waterLevel),
       areaName: "Selected from map",
     };
-
+  
     try {
       console.log("SENDING DATA:", reportData);
 
-      const res = await fetch("http://192.168.133.4:8080/api/floods/report", {
+      const API_URL = `http://${process.env.EXPO_PUBLIC_API_HOST}:8080/api/floods/report`;
+
+      const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(reportData),
       });
 
@@ -128,19 +132,36 @@ ${description}
       console.log("STATUS:", res.status);
       console.log("RESPONSE:", text);
 
+
+      Alert.alert(
+        "Debug",
+        `Status: ${res.status}\nResponse: ${text}`
+      );
+
       if (!res.ok) {
         Alert.alert("Error", "Backend rejected request");
         return;
       }
 
-      Alert.alert("Success", "Report submitted successfully!");
+        Alert.alert(
+        "Success",
+        "Report submitted successfully!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              resetForm();
 
-      resetForm();
-
-      router.replace({
-        pathname: "/danger",
-        params: { refresh: Date.now() },
-      });
+              router.push({
+                pathname: "/danger",
+                params: {
+                  refresh: Date.now().toString(),
+                },
+              });
+            },
+          },
+        ]
+      );
 
     } catch (error) {
       console.error("FETCH ERROR:", error);
@@ -148,6 +169,7 @@ ${description}
     }
   };
 
+   
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.surface }]}>
       
@@ -309,6 +331,7 @@ ${description}
     </ScrollView>
   );
 }
+  
 
 const styles = StyleSheet.create({
   container: {

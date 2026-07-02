@@ -1,7 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React from "react";
-import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { Circle, MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
 
 type Spot = {
   id: number;
@@ -20,6 +20,14 @@ type UserLocation = {
 type Props = {
   spots: Spot[];
   userLocation: UserLocation | null;
+  selectedLocation: {
+    latitude: number;
+    longitude: number;
+  } | null;
+  onSelectLocation: (
+    lat: number,
+    lon: number
+  ) => void;
 };
 
 const makeIcon = (color: string) =>
@@ -44,7 +52,26 @@ const ICONS = {
   USER:   makeIcon("#16a34a"),
 };
 
-export default function LeafletMap({ spots, userLocation }: Props) {
+const SELECT_ICON = makeIcon("#8b5cf6");
+
+function MapClickHandler({
+  onSelect,
+}: {
+  onSelect: (lat: number, lon: number) => void;
+}) {
+  useMapEvents({
+    click(e) {
+      onSelect(
+        e.latlng.lat,
+        e.latlng.lng
+      );
+    },
+  });
+
+  return null;
+}
+
+export default function LeafletMap({ spots, userLocation, selectedLocation, onSelectLocation }: Props) {
   return (
     <MapContainer
       center={[6.9271, 79.8612]}
@@ -55,6 +82,9 @@ export default function LeafletMap({ spots, userLocation }: Props) {
         url="https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
         attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         maxZoom={19}
+      />
+      <MapClickHandler
+        onSelect={onSelectLocation}
       />
 
       {spots.map((spot) => (
@@ -114,6 +144,20 @@ export default function LeafletMap({ spots, userLocation }: Props) {
           <Popup>
             <strong>You are here</strong>
             <p style={{ margin: "4px 0 0", fontSize: 13 }}>Live location</p>
+          </Popup>
+        </Marker>
+      )}
+
+      {selectedLocation && (
+        <Marker
+          position={[
+            selectedLocation.latitude,
+            selectedLocation.longitude,
+          ]}
+          icon={SELECT_ICON}
+        >
+          <Popup>
+            Selected Location
           </Popup>
         </Marker>
       )}
